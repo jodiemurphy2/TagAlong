@@ -1,10 +1,15 @@
 import './App.css';
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import UserRegistration from "./components/UserRegistration";
 
 function App() {
   return (
-    <div className="App">
-      This is the TagAlong app.
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/register" element={<UserRegistration />} />
+      </Routes>
+    </Router>
   );
 }
 
