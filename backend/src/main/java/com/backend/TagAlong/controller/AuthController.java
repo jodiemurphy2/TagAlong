@@ -1,5 +1,7 @@
 package com.backend.TagAlong.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,5 +24,11 @@ public class AuthController {
     public ResponseEntity<User> register(@RequestBody User user) {
         User registeredUser = authService.registerUser(user.getUsername(), user.getEmail(), user.getPassword());
         return ResponseEntity.ok(registeredUser);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody Map<String, String> user) {
+        String token = authService.loginUser(user.get("email"), user.get("password"));
+        return ResponseEntity.ok(token); // Return JWT token on successful login
     }
 }
