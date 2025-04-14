@@ -1,0 +1,92 @@
+package com.backend.TagAlong.service;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+import com.backend.TagAlong.model.Event;
+import com.backend.TagAlong.model.User;
+import com.backend.TagAlong.repository.EventRepository;
+import com.backend.TagAlong.repository.UserRepository;
+
+@Service
+public class EventService {
+    @Autowired
+    private EventRepository eventRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    public List<Event> getAllEvents() {
+        return eventRepository.findAll();
+    }
+
+    public Event createEventWithUser(Event event, String email) {
+        User user = userRepository.findByEmail(email)
+                  .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        event.setCreatedBy(user);
+        return eventRepository.save(event);
+    }
+
+    public boolean deleteIfOwnedByUser(Long eventId, String email) {
+        Optional<Event> optionalEvent = eventRepository.findById(eventId);
+        if (optionalEvent.isPresent()) {
+            Event event = optionalEvent.get();
+            if (event.getCreatedBy().getEmail().equals(email)) {
+                eventRepository.deleteById(eventId);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Page<Event> getEventsByUser(String email, int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
+        return eventRepository.findByCreatedByEmail(email, pageable);
+    }
+
+    public Optional<Event> getEventById(Long id) {
+        return eventRepository.findById(id);
+    }
+
+    public Page<Event> getAllEvents(Pageable pageable) {
+        return eventRepository.findAll(pageable);
+    }
+
+    public Page<Event> searchByName(String name, Pageable pageable) {
+        return eventRepository.findByNameContainingIgnoreCase(name, pageable);
+    }
+
+    public Page<Event> searchByDate(LocalDate date, Pageable pageable) {
+        return eventRepository.findByDate(date, pageable);
+    }
+
+    public Page<Event> searchByCategory(String category, Pageable pageable) {
+        return eventRepository.findByCategoryIgnoreCase(category, pageable);
+    }
+
+    public Page<Event> searchByNameAndDate(String name, LocalDate date, Pageable pageable) {
+        return eventRepository.findByNameContainingIgnoreCaseAndDate(name, date, pageable);
+    }
+
+    public Page<Event> searchByNameAndCategory(String name, String category, Pageable pageable) {
+        return eventRepository.findByNameContainingIgnoreCaseAndCategoryIgnoreCase(name, category, pageable);
+    }
+
+    public Page<Event> searchByDateAndCategory(LocalDate date, String category, Pageable pageable) {
+        return eventRepository.findByDateAndCategoryIgnoreCase(date, category, pageable);
+    }
+
+    public Page<Event> searchByNameDateCategory(String name, LocalDate date, String category, Pageable pageable) {
+        return eventRepository.findByNameContainingIgnoreCaseAndDateAndCategoryIgnoreCase(name, date, category, pageable);
+    }
+    
+}
