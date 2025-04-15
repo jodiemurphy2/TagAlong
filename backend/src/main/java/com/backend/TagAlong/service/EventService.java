@@ -9,13 +9,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.backend.TagAlong.model.Event;
 import com.backend.TagAlong.model.User;
 import com.backend.TagAlong.repository.EventRepository;
-import com.backend.TagAlong.repository.UserRepository;
 
 @Service
 public class EventService {
@@ -23,15 +21,13 @@ public class EventService {
     private EventRepository eventRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     public List<Event> getAllEvents() {
         return eventRepository.findAll();
     }
 
-    public Event createEventWithUser(Event event, String email) {
-        User user = userRepository.findByEmail(email)
-                  .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    public Event createEvent(Event event, User user) {
         event.setCreatedBy(user);
         return eventRepository.save(event);
     }
@@ -49,8 +45,11 @@ public class EventService {
     }
 
     public Page<Event> getEventsByUser(String email, int page, int size, String sortBy) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
-        return eventRepository.findByCreatedByEmail(email, pageable);
+        User user = userService.findByEmail(email);
+        Long userID = user.getId();
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        
+        return eventRepository.findByCreatedById(userID, pageable);
     }
 
     public Optional<Event> getEventById(Long id) {

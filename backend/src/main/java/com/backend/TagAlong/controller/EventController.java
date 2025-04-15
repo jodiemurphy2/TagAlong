@@ -2,11 +2,12 @@ package com.backend.TagAlong.controller;
 
 import java.security.Principal;
 import java.time.LocalDate;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.TagAlong.model.Event;
+import com.backend.TagAlong.model.User;
 import com.backend.TagAlong.service.EventService;
+import com.backend.TagAlong.service.UserService;
 
 @RestController
 @RequestMapping("/api/events")
@@ -32,15 +35,26 @@ public class EventController {
     @Autowired
     private EventService eventService;
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping
-    public List<Event> getAllEvents() {
-        return eventService.getAllEvents();
+    public Page<Event> getAllEvents(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(defaultValue = "date") String sortBy
+    ) {
+        return eventService.getAllEvents(PageRequest.of(page, size, Sort.by(sortBy)));
     }
 
     @PostMapping
     @PreAuthorize("isAuthenticated()")
-    public Event createEvent(@RequestBody Event event, Principal principal) {
-    return eventService.createEventWithUser(event, principal.getName());
+    public ResponseEntity<Event> createEvent(@RequestBody Event event, Principal principal) {
+        String email = principal.getName(); 
+        User user = userService.findByEmail(email); 
+        
+        Event createdEvent = eventService.createEvent(event,user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdEvent);
     }
 
     @DeleteMapping("/{id}")
@@ -56,13 +70,21 @@ public class EventController {
 
     @GetMapping("/my-events")
     @PreAuthorize("isAuthenticated()")
-    public Page<Event> getMyEvents(
+    public ResponseEntity<Page<Event>> getMyEvents(
         Principal principal,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size,
         @RequestParam(defaultValue = "date") String sortBy
     ){
-        return eventService.getEventsByUser(principal.getName(), page, size, sortBy);
+        System.out.println("Authenticated User: " + principal.getName());
+        
+        Page<Event> events = eventService.getEventsByUser(principal.getName(), page, size, sortBy);
+
+        if (events.isEmpty()) {
+            return ResponseEntity.noContent().build();  // No events found
+        }
+
+        return ResponseEntity.ok(events);
     }
 
     @GetMapping("/search")
@@ -72,6 +94,9 @@ public class EventController {
             @RequestParam(required = false) String category,
             @PageableDefault(size = 10, sort = "date") Pageable pageable
     ) {
+        if (name != null && name.trim().isEmpty()) name = null;
+        if (category != null && category.trim().isEmpty()) category = null;
+
         if (name != null && date != null && category != null) {
             return eventService.searchByNameDateCategory(name, date, category, pageable);
         } else if (name != null && category != null) {

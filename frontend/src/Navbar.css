@@ -1,0 +1,58 @@
+/* General Navbar styles */
+.navbar {
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .navbar-links {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .navbar-link {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .navbar-link:hover {
+    background-color: #f0a500;
+    color: black;
+  }
+  
+  .navbar-btn {
+    background-color: #f0a500;
+    color: white;
+    border: none;
+    padding: 7px 15px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .navbar-btn:hover {
+    background-color: #ff8c00;
+    color: black;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .navbar-links {
+      flex-direction: column;
+      gap: 10px;
+    }
+  
+    .navbar-btn {
+      width: 100%;
+    }
+  }
+  

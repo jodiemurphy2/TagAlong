@@ -2,6 +2,8 @@ package com.backend.TagAlong.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -35,5 +37,6 @@ public class User {
     private Role role;
 
     @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Event> events;
 }

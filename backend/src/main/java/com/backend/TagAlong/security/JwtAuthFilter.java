@@ -41,6 +41,9 @@ public class JwtAuthFilter extends OncePerRequestFilter{
                 if (jwtUtil.validateToken(token)) {
                     String email = jwtUtil.extractEmail(token);
 
+                    // Log the extracted email for debugging
+                    System.out.println("Extracted email from token: " + email);
+
                     // Load user details from DB (via your CustomUserDetailsService)
                     UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
@@ -52,6 +55,8 @@ public class JwtAuthFilter extends OncePerRequestFilter{
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                     SecurityContextHolder.getContext().setAuthentication(authentication);
+
+
                 }
             } catch (Exception e) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");

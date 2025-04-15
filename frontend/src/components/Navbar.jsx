@@ -1,22 +1,28 @@
-import React, { useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../auth/AuthContext';
+import React from "react";
+import { Link } from "react-router-dom";
+import { useAuthContext } from "../auth/AuthContext";
+import '../Navbar.css'; // Let's use an external CSS file for styling
 
 const Navbar = () => {
-  const { auth, logout } = useContext(AuthContext);
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+  const { authState, logout } = useAuthContext();
 
   return (
-    <nav style={{ padding: '1rem', borderBottom: '1px solid #ccc' }}>
-      <Link to="/" style={{ marginRight: '1rem' }}>Register</Link>
-      <Link to="/login" style={{ marginRight: '1rem' }}>Login</Link>
-      <Link to="/profile" style={{ marginRight: '1rem' }}>Profile</Link>
-      {auth && <button onClick={handleLogout}>Logout</button>}
+    <nav className="navbar">
+      <div className="navbar-links">
+        <Link to="/home" className="navbar-link">Home</Link>
+        {authState.user ? (
+          <>
+            <Link to="/add-event" className="navbar-link">Add Event</Link>
+            <Link to="/profile" className="navbar-link">Profile</Link>
+            <button className="navbar-btn" onClick={logout}>Logout</button>
+          </>
+        ) : (
+          <>
+            <Link to="/login" className="navbar-link">Login</Link>
+            <Link to="/register" className="navbar-link">Register</Link>
+          </>
+        )}
+      </div>
     </nav>
   );
 };
