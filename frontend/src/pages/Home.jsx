@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getEvents, searchEvents } from '../services/api'; // Correct imports
+import { getEvents, searchEvents, tagAlong } from '../services/api'; // Correct imports
 
 const Home = () => {
   const [events, setEvents] = useState([]);
@@ -25,9 +25,20 @@ const Home = () => {
         setLoading(false);
       }
     };
+
     useEffect(() => {
       fetchEvents();
     }, []);
+
+    const handleTagAlong = async (eventId) => {
+        try {
+          await tagAlong(eventId);
+          fetchEvents(); // Reload all events
+        } catch (err) {
+          console.error(err);
+          alert('Failed to tag along');
+        }
+      };
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -91,6 +102,9 @@ const Home = () => {
                 <h3>{event.name}</h3>
                 <p><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</p>
                 <p><strong>Category:</strong> {event.category}</p>
+                <p><strong>Location:</strong> {event.location}</p>
+                <p><strong>Attendees:</strong> {event.attendeeEmails?.join(", ")}</p>
+                <button onClick={() => handleTagAlong(event.id)}>Tag-Along</button>
               </div>
             ))
           ) : (

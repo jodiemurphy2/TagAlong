@@ -31,6 +31,27 @@ export const createEvent = async (eventData) => {
   }
 };
 
+export const tagAlong = async (eventId) => {
+  const token = localStorage.getItem('token');
+  const response = await axiosInstance.post(`/events/${eventId}/tag-along`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+};
+
+export const getTaggedEvents = async () => {
+  const token = localStorage.getItem('token');
+  const response = await axiosInstance.get('/events/tagged', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
+ });
+  return response.data;
+};
+
 export const getMyEvents = async () => {
   const token = localStorage.getItem('token');
   const response = await axiosInstance.get("/events/my-events", {

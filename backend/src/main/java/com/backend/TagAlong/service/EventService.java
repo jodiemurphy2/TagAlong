@@ -52,6 +52,28 @@ public class EventService {
         return eventRepository.findByCreatedById(userID, pageable);
     }
 
+    public Page<Event> getEventsUserIsAttending(String email, int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return eventRepository.findByAttendeeEmailsContaining(email , pageable);
+    }
+
+    public Event addAttendee(Long eventId, User user) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+        
+        String userEmail = user.getEmail();
+        System.out.println("Existing attendees: " + event.getAttendeeEmails());
+
+        if (!event.getAttendeeEmails().contains(userEmail)) {
+            event.getAttendeeEmails().add(userEmail);
+            Event saved = eventRepository.save(event);
+            System.out.println("User " + userEmail + " added to event ID " + eventId);
+            return saved;
+        }
+        System.out.println("User " + userEmail + " already tagged along for event ID " + eventId);
+        return event;
+    }
+
     public Optional<Event> getEventById(Long id) {
         return eventRepository.findById(id);
     }
@@ -87,5 +109,7 @@ public class EventService {
     public Page<Event> searchByNameDateCategory(String name, LocalDate date, String category, Pageable pageable) {
         return eventRepository.findByNameContainingIgnoreCaseAndDateAndCategoryIgnoreCase(name, date, category, pageable);
     }
+
+
     
 }

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { getMyEvents, deleteEvent } from '../services/api'; // Correct import
+import { getMyEvents, deleteEvent, getTaggedEvents } from '../services/api'; // Correct import
 
 const Profile = () => {
   const [events, setEvents] = useState([]);
+  const [taggedEvents, setTaggedEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -23,6 +24,21 @@ const Profile = () => {
     fetchMyEvents(); // Call the function to fetch events
   }, []);
 
+  useEffect(() => {
+    const fetchTaggedEvents = async () => {
+      try {
+        const data = await getTaggedEvents();
+        setTaggedEvents(data.content);
+      } catch (err) {
+        setError("Failed to load tagged events");
+        console.error( err);
+      }finally {
+        setLoading(false);
+      }
+    };
+    fetchTaggedEvents();
+  }, []);
+
   const handleDelete = async (eventId) => {
     try {
       await deleteEvent(eventId);
@@ -38,7 +54,7 @@ const Profile = () => {
 
   return (
     <div>
-      <h2>My Events</h2>
+      <h2>My Created Events</h2>
       {Array.isArray(events) && events.length > 0 ? (
         <div className="event-list" style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
           {events.map((event) => (
@@ -46,6 +62,7 @@ const Profile = () => {
               <h3>{event.name}</h3>
               <p><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</p>
               <p><strong>Category:</strong> {event.category}</p>
+              <p><strong>Location:</strong> {event.location}</p>
               <button onClick={() => handleDelete(event.id)} style={{ marginTop: '10px', background: 'red', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '4px' }}>
                 Delete
               </button>
@@ -54,6 +71,22 @@ const Profile = () => {
         </div>
       ) : (
         <p>No events found.</p>
+      )}
+      <h2>Tagged Along Events</h2>
+      {taggedEvents.length > 0 ? (
+        <div className="event-list" style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}> 
+          {taggedEvents.map((event) => (
+            <div key={event.id} className="event-card" style={{ padding: '1rem', border: '1px solid #ccc', borderRadius: '8px' }}>
+              <h3>{event.name}</h3>
+              <p><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</p>
+              <p><strong>Category:</strong> {event.category}</p>
+              <p><strong>Location:</strong> {event.location}</p>
+              <p><strong>Attendees:</strong> {event.attendeeEmails?.join(", ")}</p>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p>No upcoming events yet.</p>
       )}
     </div>
   );

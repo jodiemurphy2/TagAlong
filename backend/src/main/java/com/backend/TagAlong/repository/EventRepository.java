@@ -26,4 +26,6 @@ public interface EventRepository extends JpaRepository<Event, Long>{
     Page<Event> findAll(Pageable pageable);
 
     Page<Event> findByCreatedById(Long userId, Pageable pageable);
+    
+    Page<Event> findByAttendeeEmailsContaining(String userEmail, Pageable pageable);
 }

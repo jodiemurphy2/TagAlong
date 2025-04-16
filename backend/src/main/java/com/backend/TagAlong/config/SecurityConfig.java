@@ -4,6 +4,7 @@ package com.backend.TagAlong.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -36,8 +37,10 @@ public class SecurityConfig {
          .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> 
          authorizationManagerRequestMatcherRegistry
          .requestMatchers("/api/auth/**").permitAll()
-         .requestMatchers("/api/events").permitAll()
+         .requestMatchers(HttpMethod.GET, "/api/events/**").permitAll()
+         .requestMatchers(HttpMethod.POST, "/api/events/**").authenticated()
          .requestMatchers("/api/events/my-events").authenticated()
+         .requestMatchers("/api/events/tagged").authenticated()
          .anyRequest().authenticated()) //secure other endpoints
          .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Make session stateless
          .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class) // Add JWT filter

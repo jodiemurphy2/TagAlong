@@ -68,6 +68,35 @@ public class EventController {
         }
     }
 
+    @PostMapping("/{eventId}/tag-along")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Event> tagAlongEvent(@PathVariable Long eventId, Principal principal) {
+        String email = principal.getName();
+        User user = userService.findByEmail(email);
+
+        Event updatedEvent = eventService.addAttendee(eventId, user);
+        return ResponseEntity.ok(updatedEvent);
+    }
+
+    @GetMapping("/tagged")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Page<Event>> getTaggedEvents(
+        Principal principal,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(defaultValue = "date") String sortBy
+    ) {
+        String email = principal.getName();
+        
+        Page<Event> taggedEvents = eventService.getEventsUserIsAttending(email, page, size, sortBy);
+
+        if (taggedEvents.isEmpty()) {
+            return ResponseEntity.noContent().build();  // No events found
+        }
+
+        return ResponseEntity.ok(taggedEvents);
+}
+
     @GetMapping("/my-events")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Page<Event>> getMyEvents(
