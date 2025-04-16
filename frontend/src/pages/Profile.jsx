@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { getMyEvents, deleteEvent, getTaggedEvents } from '../services/api'; // Correct import
+import { getMyEvents, deleteEvent, getTaggedEvents } from '../services/api';
+import { Box, Typography, Button, Card, CardContent, CardActions, Grid, Alert, CircularProgress, Divider } from '@mui/material';
+
 
 const Profile = () => {
   const [events, setEvents] = useState([]);
@@ -49,46 +51,77 @@ const Profile = () => {
     }
   };
 
-  if (loading) return <p>Loading your events...</p>;
-  if (error) return <p style={{ color: 'red' }}>{error}</p>;
+  if (loading) return <CircularProgress />;
+  if (error) return <Alert severity="error">{error}</Alert>;
 
   return (
-    <div>
-      <h2>My Created Events</h2>
-      {Array.isArray(events) && events.length > 0 ? (
-        <div className="event-list" style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
-          {events.map((event) => (
-            <div key={event.id} className="event-card" style={{ padding: '1rem', border: '1px solid #ccc', borderRadius: '8px' }}>
-              <h3>{event.name}</h3>
-              <p><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</p>
-              <p><strong>Category:</strong> {event.category}</p>
-              <p><strong>Location:</strong> {event.location}</p>
-              <button onClick={() => handleDelete(event.id)} style={{ marginTop: '10px', background: 'red', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '4px' }}>
-                Delete
-              </button>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p>No events found.</p>
-      )}
-      <h2>Tagged Along Events</h2>
-      {taggedEvents.length > 0 ? (
-        <div className="event-list" style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}> 
-          {taggedEvents.map((event) => (
-            <div key={event.id} className="event-card" style={{ padding: '1rem', border: '1px solid #ccc', borderRadius: '8px' }}>
-              <h3>{event.name}</h3>
-              <p><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</p>
-              <p><strong>Category:</strong> {event.category}</p>
-              <p><strong>Location:</strong> {event.location}</p>
-              <p><strong>Attendees:</strong> {event.attendeeEmails?.join(", ")}</p>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p>No upcoming events yet.</p>
-      )}
-    </div>
+    <Box p={3}>
+      <Typography variant="h4" gutterBottom>My Profile</Typography>
+
+      <Typography variant="h5" gutterBottom>My Created Events</Typography>
+      <Grid container spacing={3}>
+        {events.length > 0 ? (
+          events.map((event) => (
+            <Grid item xs={12} sm={6} md={4} key={event.id}>
+              <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <CardContent>
+                  <Typography variant="h6">{event.name}</Typography>
+                  <Typography><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</Typography>
+                  <Typography><strong>Category:</strong> {event.category}</Typography>
+                  <Typography><strong>Location:</strong> {event.location}</Typography>
+                </CardContent>
+                <CardActions sx={{ marginTop: 'auto' }}>
+                  <Button size="small" variant="contained" color="secondary" onClick={() => handleDelete(event.id)}>
+                    Delete
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))
+        ) : (
+          <Typography>No created events found.</Typography>
+        )}
+      </Grid>
+      <Divider sx={{ my: 3 }} />
+      <Typography variant="h5" gutterBottom>Tagged Along Events</Typography>
+      <Grid container spacing={3}>
+        {Array.isArray(taggedEvents) && taggedEvents.length > 0 ? (
+          taggedEvents.map((event) => (
+            <Grid item xs={12} sm={6} md={4} key={event.id}>
+              <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <CardContent>
+                  <Typography variant="h6">{event.name}</Typography>
+                  <Typography><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</Typography>
+                  <Typography><strong>Category:</strong> {event.category}</Typography>
+                  <Typography><strong>Location:</strong> {event.location}</Typography>
+                  <Typography sx={{ mb: 1 }}><strong>Attendees:</strong></Typography>
+                    <Box
+                    sx={{
+                        maxHeight: 100,
+                        overflowY: 'auto',
+                        backgroundColor: '#f5f5f5',
+                        p: 1,
+                        borderRadius: 1,
+                        border: '1px solid #ccc',
+                    }}
+                    >
+                    {event.attendeeEmails && event.attendeeEmails.length > 0 ? (
+                        event.attendeeEmails.map((email, index) => (
+                        <Typography key={index} variant="body2">{email}</Typography>
+                        ))
+                    ) : (
+                        <Typography variant="body2" color="text.secondary">No attendees yet</Typography>
+                    )}
+                    </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))
+        ) : (
+          <Typography>No upcoming events yet.</Typography>
+        )}
+      </Grid>
+    </Box>
   );
 };
 

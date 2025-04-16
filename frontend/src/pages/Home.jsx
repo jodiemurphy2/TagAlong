@@ -1,5 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { getEvents, searchEvents, tagAlong } from '../services/api'; // Correct imports
+import { getEvents, searchEvents, tagAlong } from '../services/api';
+import {
+    Box,
+    Button,
+    CircularProgress,
+    Grid,
+    TextField,
+    Typography,
+    Card,
+    CardContent,
+    CardActions,
+    Alert,
+    Select,
+    MenuItem,
+    InputLabel,
+    FormControl,
+  } from '@mui/material';
 
 const Home = () => {
   const [events, setEvents] = useState([]);
@@ -9,6 +25,15 @@ const Home = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
+  const categories = [
+    'Music',
+    'Sports',
+    'Conference',
+    'Meetup',
+    'Workshop',
+    'Festival',
+    'Other',  
+];
 
     const fetchEvents = async () => {
       try {
@@ -66,53 +91,96 @@ const Home = () => {
   };
 
   return (
-    <div>
-      <h2>Events</h2>
-      <form onSubmit={handleSearch} style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-        <input
-          type="text"
-          placeholder="Search events by name"
+    <Box p={3}>
+      <Typography variant="h4" gutterBottom>Events</Typography>
+
+      <Box component="form" onSubmit={handleSearch} display="flex" flexWrap="wrap" gap={2} mb={3}>
+        <TextField
+          label="Search by Name"
+          variant="outlined"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <input
-          type="text"
-          placeholder="Category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        />
-        <input
+        <FormControl variant="outlined" sx={{ width: 'auto', maxWidth: 200, minWidth: 150 }}>
+          <InputLabel>Category</InputLabel>
+          <Select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            label="Category"
+          >
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+            {categories.map((cat, index) => (
+              <MenuItem key={index} value={cat}>
+                {cat}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <TextField
+          label="Date"
           type="date"
+          InputLabelProps={{ shrink: true }}
           value={date}
           onChange={(e) => setDate(e.target.value)}
         />
-        <button type="submit">Search</button>
-        <button type="button" onClick={handleClearSearch}>Clear Search</button>
-      </form>
+        <Button type="submit" variant="contained" color="primary">Search</Button>
+        <Button type="button" variant="outlined" onClick={handleClearSearch}>Clear Search</Button>
+      </Box>
 
       {loading ? (
-        <p>Loading events...</p>
+        <CircularProgress />
       ) : error ? (
-        <p style={{ color: 'red' }}>{error}</p>
+        <Alert severity="error">{error}</Alert>
+      ) : events.length === 0 ? (
+        <Typography>No events found.</Typography>
       ) : (
-        <div className="event-list" style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
-          {events.length > 0 ? (
-            events.map((event) => (
-              <div key={event.id} className="event-card" style={{ padding: '1rem', border: '1px solid #ccc', borderRadius: '8px' }}>
-                <h3>{event.name}</h3>
-                <p><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</p>
-                <p><strong>Category:</strong> {event.category}</p>
-                <p><strong>Location:</strong> {event.location}</p>
-                <p><strong>Attendees:</strong> {event.attendeeEmails?.join(", ")}</p>
-                <button onClick={() => handleTagAlong(event.id)}>Tag-Along</button>
-              </div>
-            ))
-          ) : (
-            <p>No events found.</p>
-          )}
-        </div>
+        <Grid container spacing={3}>
+          {events.map((event) => (
+            <Grid item xs={12} sm={6} md={4} key={event.id}>
+              <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <CardContent>
+                  <Typography variant="h6">{event.name}</Typography>
+                  <Typography><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</Typography>
+                  <Typography><strong>Category:</strong> {event.category}</Typography>
+                  <Typography><strong>Location:</strong> {event.location}</Typography>
+                  <Typography sx={{ mb: 1 }}><strong>Attendees:</strong></Typography>
+                    <Box
+                    sx={{
+                        maxHeight: 100,
+                        overflowY: 'auto',
+                        backgroundColor: '#f5f5f5',
+                        p: 1,
+                        borderRadius: 1,
+                        border: '1px solid #ccc',
+                    }}
+                    >
+                    {event.attendeeEmails && event.attendeeEmails.length > 0 ? (
+                        event.attendeeEmails.map((email, index) => (
+                        <Typography key={index} variant="body2">{email}</Typography>
+                        ))
+                    ) : (
+                        <Typography variant="body2" color="text.secondary">No attendees yet</Typography>
+                    )}
+                    </Box>
+                </CardContent>
+                <CardActions sx={{ marginTop: 'auto' }}>
+                  <Button
+                    size="small"
+                    variant="contained"
+                    sx={{ backgroundColor: '#2e7d32', '&:hover': { backgroundColor: '#1b5e20' } }}
+                    onClick={() => handleTagAlong(event.id)}
+                  >
+                    Tag-Along
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
       )}
-    </div>
+    </Box>
   );
 };
 

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../services/api'; 
+import { Box, Typography, TextField, Button, Container, Alert } from '@mui/material';
+
 
 const Register = () => {
   const navigate = useNavigate();
@@ -28,31 +30,55 @@ const Register = () => {
   };
 
   return (
-    <div>
-      <h2>Register</h2>
-      {errorMessage && <p>{errorMessage}</p>}
-      <form onSubmit={handleRegister}>
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type="submit">Register</button>
-      </form>
-    </div>
+    <Container maxWidth="sm">
+      <Box p={3}>
+        <Typography variant="h4" gutterBottom align="center">Register</Typography>
+
+        {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+
+        <form onSubmit={handleRegister}>
+          <Box mb={3}>
+            <TextField
+              label="Username"
+              type="text"
+              variant="outlined"
+              fullWidth
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </Box>
+
+          <Box mb={3}>
+            <TextField
+              label="Email"
+              type="email"
+              variant="outlined"
+              fullWidth
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </Box>
+
+          <Box mb={3}>
+            <TextField
+              label="Password"
+              type="password"
+              variant="outlined"
+              fullWidth
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </Box>
+
+          <Button type="submit" variant="contained" color="primary" fullWidth>
+            Register
+          </Button>
+        </form>
+      </Box>
+    </Container>
   );
 };
 
