@@ -38,7 +38,7 @@ const AddEvent = () => {
             const response = await createEvent(eventData); 
             if (response.status === 201) {
                 // Event created successfully, navigate to home page
-                navigate('/home');
+                navigate('/');
             } else {
                 throw new Error('Failed to create event');
             }

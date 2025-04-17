@@ -60,7 +60,7 @@ const Profile = () => {
 
       <Typography variant="h5" gutterBottom>My Created Events</Typography>
       <Grid container spacing={3}>
-        {events.length > 0 ? (
+        {Array.isArray(events) && events.length > 0 ? (
           events.map((event) => (
             <Grid item xs={12} sm={6} md={4} key={event.id}>
               <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>

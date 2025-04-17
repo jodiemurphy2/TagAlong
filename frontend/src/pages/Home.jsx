@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getEvents, searchEvents, tagAlong } from '../services/api';
+import { useAuthContext } from "../auth/AuthContext";
 import {
     Box,
     Button,
@@ -24,6 +25,7 @@ const Home = () => {
   const [date, setDate] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const { authState } = useAuthContext();
 
   const categories = [
     'Music',
@@ -166,14 +168,25 @@ const Home = () => {
                     </Box>
                 </CardContent>
                 <CardActions sx={{ marginTop: 'auto' }}>
-                  <Button
-                    size="small"
+                {authState.user && (
+                <Button
                     variant="contained"
-                    sx={{ backgroundColor: '#2e7d32', '&:hover': { backgroundColor: '#1b5e20' } }}
                     onClick={() => handleTagAlong(event.id)}
-                  >
+                    sx={{
+                        mt: 'auto',
+                        backgroundColor: '#6a1b9a', // A rich purple
+                        '&:hover': {
+                        backgroundColor: '#4a148c', // Darker on hover
+                        },
+                        color: '#fff',
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        width: '100%',
+                    }}
+                    >
                     Tag-Along
-                  </Button>
+                </Button>
+                )}
                 </CardActions>
               </Card>
             </Grid>

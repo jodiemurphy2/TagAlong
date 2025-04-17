@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../services/api'; 
+import { useAuthContext } from "../auth/AuthContext";
 import { Box, Typography, TextField, Button, Container, Alert } from '@mui/material';
 
 
 const Register = () => {
   const navigate = useNavigate();
+  const { login } = useAuthContext();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,13 +18,15 @@ const Register = () => {
     try {
       const newUser = { username, email, password };
       const response = await registerUser(newUser);
-      if (response.status === 201) {
+
+      // ✅ Check for token and log the user in
+      if (response.token) {
+        localStorage.setItem('token', response.token);
+        login(response.token);
         navigate('/profile');
       } else {
-        setErrorMessage('Registration failed.');
+        setErrorMessage('Registration succeeded but login failed.');
       }
-      console.log(response);
-      navigate('/profile');
     } catch (error) {
       console.error('Error during registration:', error);
       setErrorMessage('Registration failed');

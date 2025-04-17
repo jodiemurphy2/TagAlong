@@ -28,6 +28,11 @@ public class AuthService {
         return userRepository.save(user);
     }
 
+    public String generateToken(User user) {
+        String email = user.getEmail();
+        return jwtUtil.generateToken(email);
+    }
+
     @Autowired
     private JwtUtil jwtUtil;
 

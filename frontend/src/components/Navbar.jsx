@@ -26,7 +26,7 @@ const Navbar = () => {
   
           {/* Navigation Links */}
           <div>
-            <Button color="inherit" component={Link} to="/home">Home</Button>
+            <Button color="inherit" component={Link} to="/">Home</Button>
             {authState.user ? (
               <>
                 <Button color="inherit" component={Link} to="/add-event">Add Event</Button>
