@@ -31,7 +31,7 @@ const Navbar = () => {
               <>
                 <Button color="inherit" component={Link} to="/add-event">Add Event</Button>
                 <Button color="inherit" component={Link} to="/profile">Profile</Button>
-                <Button color="inherit" onClick={logout}>Logout</Button>
+                <Button color="inherit" onClick={logout} component={Link} to="/">Logout</Button>
               </>
             ) : (
               <>

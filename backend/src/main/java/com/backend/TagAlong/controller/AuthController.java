@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.TagAlong.dto.LoginRequest;
 import com.backend.TagAlong.model.User;
-import com.backend.TagAlong.security.JwtUtil;
 import com.backend.TagAlong.service.AuthService;
 import com.backend.TagAlong.service.UserService;
 
@@ -29,8 +28,6 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private JwtUtil jwtUtil;
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> register(@RequestBody User user) {

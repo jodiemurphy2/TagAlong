@@ -66,7 +66,7 @@ const Profile = () => {
               <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                 <CardContent>
                   <Typography variant="h6">{event.name}</Typography>
-                  <Typography><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</Typography>
+                  <Typography><strong>Date:</strong> {new Date(event.date).toLocaleDateString("en-GB")}</Typography>
                   <Typography><strong>Category:</strong> {event.category}</Typography>
                   <Typography><strong>Location:</strong> {event.location}</Typography>
                 </CardContent>
@@ -91,7 +91,7 @@ const Profile = () => {
               <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                 <CardContent>
                   <Typography variant="h6">{event.name}</Typography>
-                  <Typography><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</Typography>
+                  <Typography><strong>Date:</strong> {new Date(event.date).toLocaleDateString("en-GB")}</Typography>
                   <Typography><strong>Category:</strong> {event.category}</Typography>
                   <Typography><strong>Location:</strong> {event.location}</Typography>
                   <Typography sx={{ mb: 1 }}><strong>Attendees:</strong></Typography>

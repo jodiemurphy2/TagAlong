@@ -144,28 +144,29 @@ const Home = () => {
               <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                 <CardContent>
                   <Typography variant="h6">{event.name}</Typography>
-                  <Typography><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</Typography>
+                  <Typography><strong>Date:</strong> {new Date(event.date).toLocaleDateString("en-GB")}</Typography>
                   <Typography><strong>Category:</strong> {event.category}</Typography>
                   <Typography><strong>Location:</strong> {event.location}</Typography>
-                  <Typography sx={{ mb: 1 }}><strong>Attendees:</strong></Typography>
-                    <Box
-                    sx={{
-                        maxHeight: 100,
-                        overflowY: 'auto',
-                        backgroundColor: '#f5f5f5',
-                        p: 1,
-                        borderRadius: 1,
-                        border: '1px solid #ccc',
-                    }}
-                    >
-                    {event.attendeeEmails && event.attendeeEmails.length > 0 ? (
-                        event.attendeeEmails.map((email, index) => (
-                        <Typography key={index} variant="body2">{email}</Typography>
-                        ))
-                    ) : (
+                  {authState.user && (
+                    <><Typography sx={{ mb: 1 }}><strong>Attendees:</strong></Typography><Box
+                        sx={{
+                            maxHeight: 100,
+                            overflowY: 'auto',
+                            backgroundColor: '#f5f5f5',
+                            p: 1,
+                            borderRadius: 1,
+                            border: '1px solid #ccc',
+                        }}
+                        >
+                        {event.attendeeEmails && event.attendeeEmails.length > 0 ? (
+                            event.attendeeEmails.map((email, index) => (
+                            <Typography key={index} variant="body2">{email}</Typography>
+                                ))
+                        ) : (
                         <Typography variant="body2" color="text.secondary">No attendees yet</Typography>
-                    )}
-                    </Box>
+                        )}
+                    </Box></>
+                  )}
                 </CardContent>
                 <CardActions sx={{ marginTop: 'auto' }}>
                 {authState.user && (
@@ -174,9 +175,9 @@ const Home = () => {
                     onClick={() => handleTagAlong(event.id)}
                     sx={{
                         mt: 'auto',
-                        backgroundColor: '#6a1b9a', // A rich purple
+                        backgroundColor: '#6a1b9a', 
                         '&:hover': {
-                        backgroundColor: '#4a148c', // Darker on hover
+                        backgroundColor: '#4a148c',
                         },
                         color: '#fff',
                         borderRadius: 2,
